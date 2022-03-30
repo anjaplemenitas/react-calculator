@@ -1,5 +1,5 @@
 function App() {
-  return nill
+  return null
 }
 
 export default App;
