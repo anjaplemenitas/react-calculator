@@ -24,7 +24,49 @@ function reducer(state, { type, payload }) {
         ...state,
         currentOperand: `${state.currentOperand ||  ""}${payload.digit}`,
       }
+    case ACTIONS.CLEAR:
+      return {}
+    case ACTIONS.CHOOSE_OPERATION:
+      if (state.currentOperand == null && state.previusOperand == null) {
+        return state
+      }
+      if (state.previusOperand == null) {
+        return {
+          ...state,
+          operation: payload.operation,
+          previusOperand: state.currentOperand,
+          currentOperand: null,
+        }
+      }
+      return {
+        ...state,
+        currentOperand: evaluate(state),
+        operation: payload.operation,
+        currentOperand: null
+      }
   }
+}
+
+function evaluate({ currentOperand, previusOperand, operation }) {
+  const prev =  parseFloat(previusOperand)
+  const current = parseFloat(currentOperand)
+  if (isNaN(prev) || isNaN(current)) return ""
+  let computation = ""
+    switch (operation) {
+      case "+":
+        computation = prev + current
+        break
+    case "-":
+        computation = prev - current
+        break
+    case "*":
+        computation = prev * current
+        break
+      case "÷":
+        computation = prev / current
+        break
+    }
+    return computation.toString()
 }
 
 function App() {
@@ -43,7 +85,7 @@ function App() {
           <div className="previous-operand">{previusOperand} {operation}</div>
           <div className="current-operand">{currentOperand}</div>
         </div>
-        <button className="span-two" onClick={() => dispatch({ type: ACTIONS.CLEAR })}AC</button>
+        <button className="span-two" onClick={() => dispatch({ type: ACTIONS.CLEAR })}>AC</button>
         <button>DEL</button>
         <OperationButton operation="÷" dispatch={dispatch}/>
         <DigitButton digit="1" dispatch={dispatch}/>
